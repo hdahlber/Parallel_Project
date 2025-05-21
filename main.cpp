@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <random>
 #include <time.h>
+#include <thread>
 
-int naive_arr1[], naive_arr2[], naive_arr3[], naive_arr4[], naive_arr5[], naive_arr6[], naive_arr7[], naive_arr8[], naive_arr9[], naive_arr10[];
-int parallel_arr1[], parallel_arr2[], parallel_arr3[], parallel_arr4[], parallel_arr5[], parallel_arr6[], parallel_arr7[], parallel_arr8[], parallel_arr9[], parallel_arr10[];
+
 
 // Function to swap two elements
 void swap(int* a, int* b) {
