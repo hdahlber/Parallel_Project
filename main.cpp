@@ -3,26 +3,29 @@
 #include <time.h>
 #include <thread>
 
+//funktionsdeklarationer
+void swap(int* a, int* b);
+int partition(int arr[], int low, int high);
+int quickSort(int arr[], int low, int high);
+int getRandomInt(int min, int max);
+int readIntegersFromFile(const char* filename, int arr[], int maxSize);
 
 
-// Function to swap two elements
+//hjälpfunktion för qs
 void swap(int* a, int* b) {
     int temp = *a;
     *a = *b;
     *b = temp;
 }
 
-// Partition function
-// This takes last element as pivot, places the pivot element at its correct sorted position,
-// and places all smaller (smaller than pivot) to left of pivot and all greater elements to right of pivot
+//hjälpfunktion för qs
 int partition(int arr[], int low, int high) {
-    int pivot = arr[high];  // pivot
-    int i = (low - 1);      // Index of smaller element
+    int pivot = arr[high];
+    int i = (low - 1);
 
     for (int j = low; j <= high - 1; j++) {
-        // If current element is smaller than or equal to pivot
         if (arr[j] <= pivot) {
-            i++;    // increment index of smaller element
+            i++;
             swap(&arr[i], &arr[j]);
         }
     }
@@ -30,26 +33,23 @@ int partition(int arr[], int low, int high) {
     return (i + 1);
 }
 
-// QuickSort function
+//qs
 void quickSort(int arr[], int low, int high) {
     if (low < high) {
-        // pi is partitioning index, arr[pi] is now at right place
         int pi = partition(arr, low, high);
 
-        // Separately sort elements before partition and after partition
         quickSort(arr, low, pi - 1);
         quickSort(arr, pi + 1, high);
     }
 }
 
-// Utility function to print an array
+//funktion för utskrift av räcka
 void printArray(int arr[], int size) {
     for (int i = 0; i < size; i++)
         printf("%d ", arr[i]);
     printf("\n");
 }
 
-// Driver program to test above functions
 int main() {
 
     
@@ -68,10 +68,25 @@ int main() {
     return 0;
 }
 
+//slumpad integer, ge minimum- och maxvärden som argument för intervallen du
+//vill ha slumptalet från
 int getRandomInt(int min, int max) {
-    static std::mt19937 mt{ std::random_device{}() }; // Mersenne Twister engine seeded once
+    static std::mt19937 mt{ std::random_device{}() };
     std::uniform_int_distribution<int> dist(min, max);
     return dist(mt);
 }
 
-// test change
+//funktion för inläsning till räcka från fil
+int readIntegersFromFile(const char* filename, int arr[], int maxSize) {
+    FILE* file = fopen(filename, "r");
+    if (!file) {
+        printf("Error: Could not open file %s\n", filename);
+        return 0;
+    }
+    int count = 0;
+    while (count < maxSize && fscanf(file, "%d", &arr[count]) == 1) {
+        count++;
+    }
+    fclose(file);
+    return count;
+}
