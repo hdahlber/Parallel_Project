@@ -3,22 +3,60 @@
 #include <time.h>
 #include <thread>
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <chrono>
+#include <windows.h>
+#include <intrin.h>
+
+#include <cstdlib>
 //funktionsdeklarationer
+/*
 void swap(int* a, int* b);
 int partition(int arr[], int low, int high);
 int quickSort(int arr[], int low, int high);
 int getRandomInt(int min, int max);
 int readIntegersFromFile(const char* filename, int arr[], int maxSize);
+*/
+const int MAX_SIZE = 1000000;
 
 
-//hjälpfunktion för qs
+void writeSystemInfo(std::ofstream& out) {
+    SYSTEM_INFO sysInfo;
+    GetSystemInfo(&sysInfo);
+
+    int cpuInfo[4] = { -1 };
+    char cpuBrand[0x40];
+    __cpuid(cpuInfo, 0x80000000);
+    unsigned int nExIds = cpuInfo[0];
+
+    memset(cpuBrand, 0, sizeof(cpuBrand));
+    if (nExIds >= 0x80000004) {
+        __cpuid((int*)cpuInfo, 0x80000002);
+        memcpy(cpuBrand, cpuInfo, sizeof(cpuInfo));
+        __cpuid((int*)cpuInfo, 0x80000003);
+        memcpy(cpuBrand + 16, cpuInfo, sizeof(cpuInfo));
+        __cpuid((int*)cpuInfo, 0x80000004);
+        memcpy(cpuBrand + 32, cpuInfo, sizeof(cpuInfo));
+    }
+
+    out << "System Info:\n";
+    out << "CPU: " << cpuBrand << "\n";
+    out << "Logical Processors: " << sysInfo.dwNumberOfProcessors << "\n\n";
+}
+
+
+
+//hjï¿½lpfunktion fï¿½r qs
 void swap(int* a, int* b) {
     int temp = *a;
     *a = *b;
     *b = temp;
 }
 
-//hjälpfunktion för qs
+//hjï¿½lpfunktion fï¿½r qs
 int partition(int arr[], int low, int high) {
     int pivot = arr[high];
     int i = (low - 1);
@@ -43,17 +81,24 @@ void quickSort(int arr[], int low, int high) {
     }
 }
 
-//funktion för utskrift av räcka
+//funktion fï¿½r utskrift av rï¿½cka
 void printArray(int arr[], int size) {
     for (int i = 0; i < size; i++)
         printf("%d ", arr[i]);
     printf("\n");
 }
+bool isSorted(const int* arr, int size) {
+    for (int i = 1; i < size; ++i) {
+        if (arr[i - 1] > arr[i]) return false;
+    }
+    return true;
+}
 
-int main() {
+int main(int argc, char* argv[]) {
 
     
 
+    /*
     int arr[] = { 0 };
 	for (int i = 0; i < 100; i++) arr[i] = getRandomInt(0, 100);
 
@@ -61,22 +106,65 @@ int main() {
     int n = sizeof(arr) / sizeof(arr[0]);
     printf("Original array: ");
     printArray(arr, n);
+    */
+    std::string folder = argv[1];
+    std::string base_path = "data/" + folder + "/";
+    std::stringstream results_path;
+    results_path << "data/" << folder << "/result.txt";
+    std::ofstream results_file(results_path.str().c_str());
 
-    quickSort(arr, 0, n - 1);
-    printf("Sorted array:   ");
-    printArray(arr, n);
+    writeSystemInfo(results_file);
+
+    for (int file_num = 0; file_num < 10; ++file_num) {
+        std::stringstream file_path;
+        file_path << base_path << file_num << ".txt";
+        std::ifstream input_file(file_path.str().c_str());
+
+        int* arr = new int[MAX_SIZE];
+        int size = 0;
+        while (size < MAX_SIZE && input_file >> arr[size]) {
+            ++size;
+        }
+        input_file.close();
+
+        auto start = std::chrono::high_resolution_clock::now();
+        quickSort(arr, 0, size - 1);
+        auto end = std::chrono::high_resolution_clock::now();
+
+        std::chrono::duration<double, std::milli> duration = end - start;
+        bool ok = isSorted(arr, size);
+
+        //om ska ha print for sorted
+        /*
+        for (int i = 0; i < size; ++i) {
+            results_file << arr[i];
+            if (i < size - 1)
+                results_file << " ";
+        }
+        results_file << "\n";
+        */
+
+
+        results_file << "Folder: " << folder
+                     << ", File: " << file_num << ".txt"
+                     << ", Time(ms): " << std::fixed << std::setprecision(3) << duration.count()
+                     << ", Sorted: " << (ok ? "Yes" : "No") << "\n";
+
+        delete[] arr;
+    }
+    results_file.close();
     return 0;
 }
-
-//slumpad integer, ge minimum- och maxvärden som argument för intervallen du
-//vill ha slumptalet från
+/*
+//slumpad integer, ge minimum- och maxvï¿½rden som argument fï¿½r intervallen du
+//vill ha slumptalet frï¿½n
 int getRandomInt(int min, int max) {
     static std::mt19937 mt{ std::random_device{}() };
     std::uniform_int_distribution<int> dist(min, max);
     return dist(mt);
 }
 
-//funktion för inläsning till räcka från fil
+//funktion fï¿½r inlï¿½sning till rï¿½cka frï¿½n fil
 int readIntegersFromFile(const char* filename, int arr[], int maxSize) {
     FILE* file = fopen(filename, "r");
     if (!file) {
@@ -90,3 +178,4 @@ int readIntegersFromFile(const char* filename, int arr[], int maxSize) {
     fclose(file);
     return count;
 }
+*/

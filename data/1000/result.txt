@@ -1,0 +1,14 @@
+System Info:
+CPU: AMD Ryzen 5 3600 6-Core Processor              
+Logical Processors: 12
+
+Folder: 1000, File: 0.txt, Time(ms): 0.069, Sorted: Yes
+Folder: 1000, File: 1.txt, Time(ms): 0.063, Sorted: Yes
+Folder: 1000, File: 2.txt, Time(ms): 0.065, Sorted: Yes
+Folder: 1000, File: 3.txt, Time(ms): 0.079, Sorted: Yes
+Folder: 1000, File: 4.txt, Time(ms): 0.064, Sorted: Yes
+Folder: 1000, File: 5.txt, Time(ms): 0.064, Sorted: Yes
+Folder: 1000, File: 6.txt, Time(ms): 0.065, Sorted: Yes
+Folder: 1000, File: 7.txt, Time(ms): 0.067, Sorted: Yes
+Folder: 1000, File: 8.txt, Time(ms): 0.063, Sorted: Yes
+Folder: 1000, File: 9.txt, Time(ms): 0.069, Sorted: Yes
