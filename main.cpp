@@ -81,6 +81,24 @@ void quickSort(int arr[], int low, int high) {
     }
 }
 
+void quickSortParallel(int arr[], int low, int high,int depth = 0, int maxDepth = 4) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+
+        if (depth < maxDepth) {
+            std::thread left(quickSortParallel, arr, low, pi - 1, depth + 1, maxDepth);
+            std::thread right(quickSortParallel, arr, pi + 1, high, depth + 1, maxDepth);
+            left.join();
+            right.join();
+        } else {
+            quickSort(arr, low, pi - 1);
+            quickSort(arr, pi + 1, high);
+        }
+    }
+}
+
+
+
 //funktion f�r utskrift av r�cka
 void printArray(int arr[], int size) {
     for (int i = 0; i < size; i++)
@@ -96,7 +114,7 @@ bool isSorted(const int* arr, int size) {
 
 int main(int argc, char* argv[]) {
 
-    
+
 
     /*
     int arr[] = { 0 };
@@ -127,55 +145,31 @@ int main(int argc, char* argv[]) {
         }
         input_file.close();
 
-        auto start = std::chrono::high_resolution_clock::now();
+        int* arr_copy = new int[size];
+        std::copy(arr, arr + size, arr_copy);
+
+
+        auto start_base = std::chrono::high_resolution_clock::now();
         quickSort(arr, 0, size - 1);
-        auto end = std::chrono::high_resolution_clock::now();
+        auto end_base = std::chrono::high_resolution_clock::now();
 
-        std::chrono::duration<double, std::milli> duration = end - start;
-        bool ok = isSorted(arr, size);
+        std::chrono::duration<double, std::milli> duration_base = end_base - start_base;
+        bool ok_base = isSorted(arr, size);
 
-        //om ska ha print for sorted
-        /*
-        for (int i = 0; i < size; ++i) {
-            results_file << arr[i];
-            if (i < size - 1)
-                results_file << " ";
-        }
-        results_file << "\n";
-        */
-
-
+        auto start_mt = std::chrono::high_resolution_clock::now();
+        quickSortParallel(arr_copy, 0, size - 1);
+        auto end_mt = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> duration_mt = end_mt - start_mt;
+        bool ok_mt = isSorted(arr_copy, size);
         results_file << "Folder: " << folder
                      << ", File: " << file_num << ".txt"
-                     << ", Time(ms): " << std::fixed << std::setprecision(3) << duration.count()
-                     << ", Sorted: " << (ok ? "Yes" : "No") << "\n";
+                     << ", Naive(ms): " << std::fixed << std::setprecision(3) << duration_base.count()
+                     << ", MT(ms): " << duration_mt.count()
+                     << ", Sorted_Naive: " << (ok_base ? "Yes" : "No")
+                     << ", Sorted_MT: " << (ok_mt ? "Yes" : "No") << "\n";
 
         delete[] arr;
     }
     results_file.close();
     return 0;
 }
-/*
-//slumpad integer, ge minimum- och maxv�rden som argument f�r intervallen du
-//vill ha slumptalet fr�n
-int getRandomInt(int min, int max) {
-    static std::mt19937 mt{ std::random_device{}() };
-    std::uniform_int_distribution<int> dist(min, max);
-    return dist(mt);
-}
-
-//funktion f�r inl�sning till r�cka fr�n fil
-int readIntegersFromFile(const char* filename, int arr[], int maxSize) {
-    FILE* file = fopen(filename, "r");
-    if (!file) {
-        printf("Error: Could not open file %s\n", filename);
-        return 0;
-    }
-    int count = 0;
-    while (count < maxSize && fscanf(file, "%d", &arr[count]) == 1) {
-        count++;
-    }
-    fclose(file);
-    return count;
-}
-*/
