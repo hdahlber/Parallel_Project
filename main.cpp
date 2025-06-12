@@ -114,7 +114,17 @@ bool isSorted(const int* arr, int size) {
 
 int main(int argc, char* argv[]) {
 
-
+    if (argc < 2 ||
+        (strcmp(argv[1], "100") != 0 &&
+			strcmp(argv[1], "1000") != 0 &&
+            strcmp(argv[1], "100000") != 0 &&
+            strcmp(argv[1], "1000000") != 0)) {
+        std::cerr << "Usage: " << argv[0] << " <folder_name>\n";
+        std::cerr << "Folder name should be one of: 100, 1000, 100000, 1000000\n";
+        return 1;
+    }
+	std::cout << "Starting...\n";
+	auto program_start_time = std::chrono::high_resolution_clock::now();
 
     /*
     int arr[] = { 0 };
@@ -130,6 +140,7 @@ int main(int argc, char* argv[]) {
     std::stringstream results_path;
     results_path << "data/" << folder << "/result.txt";
     std::ofstream results_file(results_path.str().c_str());
+    double naive_time_accumulated, parallell_time_accumulated, naive_time_average, parallell_time_average;
 
     writeSystemInfo(results_file);
 
@@ -148,18 +159,31 @@ int main(int argc, char* argv[]) {
         int* arr_copy = new int[size];
         std::copy(arr, arr + size, arr_copy);
 
-
+		std::cout << "Sorting with single thread...\n" << std::endl;
         auto start_base = std::chrono::high_resolution_clock::now();
         quickSort(arr, 0, size - 1);
         auto end_base = std::chrono::high_resolution_clock::now();
 
         std::chrono::duration<double, std::milli> duration_base = end_base - start_base;
+		std::cout << "Naive quicksort completed.\n";
+        //print naive time
+		std::cout << "File " + std::to_string(file_num) + " Naive quicksort time : "
+			<< std::fixed << std::setprecision(3) << duration_base.count() << " ms\n\n";
+        naive_time_accumulated += duration_base.count();
         bool ok_base = isSorted(arr, size);
 
+		std::cout << "Sorting with multiple threads...\n" << std::endl;
         auto start_mt = std::chrono::high_resolution_clock::now();
         quickSortParallel(arr_copy, 0, size - 1);
         auto end_mt = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> duration_mt = end_mt - start_mt;
+		std::cout << "Parallel quicksort completed.\n";
+		//print mt time
+		std::cout << "File " + std::to_string(file_num) + " Parallel quicksort time: "
+			<< std::fixed << std::setprecision(3) << duration_mt.count() << " ms\n\n";
+        // accumulate total parallell time
+        parallell_time_accumulated += duration_mt.count();
+
         bool ok_mt = isSorted(arr_copy, size);
         results_file << "Folder: " << folder
                      << ", File: " << file_num << ".txt"
@@ -171,5 +195,22 @@ int main(int argc, char* argv[]) {
         delete[] arr;
     }
     results_file.close();
+
+	naive_time_average = naive_time_accumulated / 10.0;
+	parallell_time_average = parallell_time_accumulated / 10.0;
+
+	std::cout << "Average Naive quicksort time: "
+		<< std::fixed << std::setprecision(3) << naive_time_average << " ms\n";
+	std::cout << "Average Parallel quicksort time: "
+		<< std::fixed << std::setprecision(3) << parallell_time_average << " ms\n";
+	std::cout << "Performance improvement: "
+		<< std::fixed << std::setprecision(3)
+		<< (naive_time_average / parallell_time_average) << "x\n\n";
+
+
+	auto program_end_time = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double, std::milli> program_duration = program_end_time - program_start_time;
+	std::cout << "\nTotal program duration: "
+		<< std::fixed << std::setprecision(3) << program_duration.count() << " ms\n";
     return 0;
 }
