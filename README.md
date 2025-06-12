@@ -11,11 +11,9 @@ The quicksort can be benefitted by a parallell implementation with improvements 
 
 
 ## Table: comparison of average execution times (10 samples) for naive and parallell implementations of quicksort
-|--------------|-----------------|--------------------|-------------|
-| Problem Size | Naive Time (ms) | Parallel Time (ms) | Improvement |
+| Array Size   | Naive Time (ms) | Parallel Time (ms) | Improvement |
 |--------------|-----------------|--------------------|-------------|
 | 100          | 0.011           | 3.717              | 0.003x	    |
 | 1000         | 0.155           | 4.749              | 0.033x      |
 | 100000       | 21.987          | 16.796             | 1.309x      |
 | 1000000      | 283.419         | 141.742            | 2.000x      |
-|--------------|-----------------|--------------------|-------------|
