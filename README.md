@@ -1,7 +1,7 @@
 # Parallel_Project
 Final Project Submission
 
-Carl Nordernbrink, Hektor Dahlberg
+Carl Nordenbrink, Hektor Dahlberg
 
 We have generated 40 instances of arrays of sizes 100, 1000, 100000, and 1000000, for 10 instances of each.
 Each array element is an integer with a random value ranging between 0 and 1000000.
